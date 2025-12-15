@@ -1,27 +1,19 @@
 {
-<<<<<<< HEAD
   "hash": "a23f358a",
   "configHash": "4e8cca2e",
   "lockfileHash": "a62cead9",
-  "browserHash": "821fe777",
-  "optimized": {},
-  "chunks": {}
-=======
-  "hash": "4d306ac0",
-  "configHash": "4e8cca2e",
-  "lockfileHash": "1a7f4840",
-  "browserHash": "ef9d9770",
+  "browserHash": "67a53271",
   "optimized": {
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "b5b01e6b",
+      "fileHash": "d579688e",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "a451a159",
+      "fileHash": "dc4b67dd",
       "needsInterop": true
     }
   },
@@ -30,5 +22,4 @@
       "file": "chunk-O5RE5CKT.js"
     }
   }
->>>>>>> feature/us01-setup-projet
 }
