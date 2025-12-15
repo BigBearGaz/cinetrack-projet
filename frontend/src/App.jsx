@@ -7,9 +7,8 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState('catalog'); // 'catalog' ou 'mylist'
+  const [view, setView] = useState('catalog');
 
-  // Récupérer films et catégories
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -30,7 +29,6 @@ function App() {
       const data = await response.json();
       setFilms(data);
       setError(null);
-      console.log('🎬 Films reçus:', data); // log pour debug
     } catch (err) {
       setError(err.message);
       console.error('Erreur:', err);
@@ -45,7 +43,6 @@ function App() {
       if (!response.ok) throw new Error('Erreur lors du chargement des catégories');
       const data = await response.json();
       setCategories(data);
-      console.log('🏷️ Categories reçues:', data); // log pour debug
     } catch (err) {
       console.error('Erreur catégories:', err);
     }
@@ -56,64 +53,110 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900 flex flex-col">
       <Header view={view} setView={setView} />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
         {view === 'catalog' && (
           <>
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Catalogue de Films 🎬
-              </h1>
-              <p className="text-gray-600">
-                Découvrez notre collection de {films.length} films
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <h2 className="font-semibold mb-2">Filtrer par catégorie :</h2>
-              <button
-                className={`px-3 py-1 rounded mr-2 ${selectedCategory === null ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-                onClick={() => handleCategoryChange(null)}
-              >
-                Tous
-              </button>
-              {categories.map(cat => (
+            {/* Filtres */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex flex-wrap gap-2">
                 <button
-                  key={cat.id}
-                  className={`px-3 py-1 rounded mr-2 ${selectedCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-                  onClick={() => handleCategoryChange(cat.id)}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded font-medium transition ${
+                    selectedCategory === null 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                  onClick={() => handleCategoryChange(null)}
                 >
-                  {cat.name}
+                  Tous
                 </button>
-              ))}
+                {categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded font-medium transition ${
+                      selectedCategory === cat.id 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    }`}
+                    onClick={() => handleCategoryChange(cat.id)}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
             </div>
 
+            {/* Loading */}
             {loading && (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+              <div className="flex justify-center py-12 sm:py-20">
+                <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-blue-500 border-t-transparent"></div>
               </div>
             )}
 
+            {/* Erreur */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                ❌ {error}
+              <div className="bg-red-900/50 border border-red-500 text-red-200 px-3 sm:px-4 py-2 sm:py-3 rounded mb-4 text-sm sm:text-base">
+                {error}
               </div>
             )}
 
+            {/* Aucun film */}
             {!loading && !error && films.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">Aucun film trouvé dans cette catégorie</p>
+              <div className="text-center py-12 sm:py-20">
+                <p className="text-gray-400 text-base sm:text-lg">Aucun film trouvé</p>
               </div>
             )}
 
+            {/* Grille de films - RESPONSIVE */}
             {!loading && !error && films.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {films.map(film => (
-                  <div key={film.id} className="border p-4 rounded shadow-sm">
-                    <h3 className="font-bold">{film.title}</h3>
-                    {film.description && <p className="text-gray-600">{film.description}</p>}
+                  <div 
+                    key={film.id} 
+                    className="bg-gray-800 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition shadow-lg"
+                  >
+                    {/* Image */}
+                    <div className="aspect-[2/3] bg-gray-700 relative">
+                      {film.poster_url ? (
+                        <img 
+                          src={film.poster_url} 
+                          alt={film.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl">
+                          🎬
+                        </div>
+                      )}
+                      
+                      {/* Badges */}
+                      <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 right-1.5 sm:right-2 flex justify-between gap-1">
+                        {film.release_year && (
+                          <span className="bg-black/70 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded whitespace-nowrap">
+                            {film.release_year}
+                          </span>
+                        )}
+                        {film.duration && (
+                          <span className="bg-blue-600 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded whitespace-nowrap">
+                            {film.duration}min
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Titre */}
+                    <div className="p-2 sm:p-3">
+                      <h3 className="text-white text-xs sm:text-sm font-semibold line-clamp-2 leading-tight">
+                        {film.title}
+                      </h3>
+                      {film.director && (
+                        <p className="text-gray-400 text-[10px] sm:text-xs mt-1 truncate">
+                          {film.director}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -122,30 +165,18 @@ function App() {
         )}
 
         {view === 'mylist' && (
-          <div className="text-center py-20">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Ma Liste 📝
-            </h1>
-            <p className="text-gray-600 mb-8">
-              Votre liste personnelle de films
-            </p>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 max-w-md mx-auto">
-              <p className="text-blue-800 mb-4">
-                Cette fonctionnalité sera disponible dans le Sprint 1 - US-05
-              </p>
-              <p className="text-blue-600 text-sm">
-                Vous pourrez bientôt voir tous vos films ajoutés ici !
-              </p>
+          <div className="text-center py-12 px-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-white mb-4">Ma Liste</h1>
+            <div className="bg-gray-800 rounded-lg p-4 sm:p-6 max-w-md mx-auto">
+              <p className="text-gray-400 text-sm sm:text-base">Fonctionnalité à venir</p>
             </div>
           </div>
         )}
       </main>
 
-      <footer className="bg-gray-800 text-white mt-16 py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-400">
-            CineTrack © 2024 - Votre gestionnaire de films personnel
-          </p>
+      <footer className="bg-gray-950 border-t border-gray-800 py-3 sm:py-4 mt-auto">
+        <div className="container mx-auto px-3 sm:px-4 text-center">
+          <p className="text-gray-500 text-xs sm:text-sm">CineTrack © 2025</p>
         </div>
       </footer>
     </div>
